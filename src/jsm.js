@@ -123,7 +123,7 @@ mixin(JSM.prototype, {
 		return this.resumeTransit(transition, from, to, args);
   },
 
-  beginTransit: function() {
+  beginTransit: function(to) {
     this.pendingState = to;
     this.pending = true;
   },
