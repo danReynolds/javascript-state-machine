@@ -126,7 +126,7 @@ mixin(JSM.prototype, {
 		this.pending = false;
 		var to = args[0].to;
     if (this.subscriptions.length !== 0) {
-      subscriptions.shift()();
+      subscriptions.shift().resolve();
     }
 		return result;
 	},
