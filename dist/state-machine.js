@@ -473,13 +473,15 @@ mixin(JSM.prototype, {
 				return _this.resumeTransit(transition, from, to, args);
 			});
 		}
-		return this.resumeTransit(transition, from, to, args);
+	   var x = this.resumeTransit(transition, from, to, args);
+     return x;
   },
 
   beginTransit: function(to) {
     this.pending = true;
   },
   endTransit:   function(args, result)    {
+    console.log('here1');
 		this.pending = false;
 		var to = args[0].to;
     if (this.subscriptions.length !== 0) {
@@ -488,6 +490,7 @@ mixin(JSM.prototype, {
 		return result;
 	},
   failTransit:  function(result)    {
+    console.log('here2');
     this.pending = false;
     this.subscriptions.forEach(function(subscription) {
       subscription.reject();
