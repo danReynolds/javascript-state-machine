@@ -113,7 +113,7 @@ mixin(JSM.prototype, {
 
     if (this.isPending()) {
 			return this.waitForState().then(function() {
-				return this.resumeTransit(transition, from, to, args);
+				return _this.resumeTransit(transition, from, to, args);
 			});
 		}
 		return this.resumeTransit(transition, from, to, args);
