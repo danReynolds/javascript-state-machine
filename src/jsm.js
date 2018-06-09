@@ -116,20 +116,13 @@ mixin(JSM.prototype, {
 				return _this.resumeTransit(transition, from, to, args);
 			});
 		}
-	  var result = this.resumeTransit(transition, from, to, args)
-    if (result.then) {
-      result.then(function(result) {
-         return result;
-       });
-     }
-     return result;
+		return this.resumeTransit(transition, from, to, args);
   },
 
   beginTransit: function(to) {
     this.pending = true;
   },
   endTransit:   function(args, result)    {
-    console.log('here1');
 		this.pending = false;
 		var to = args[0].to;
     if (this.subscriptions.length !== 0) {
@@ -138,13 +131,12 @@ mixin(JSM.prototype, {
 		return result;
 	},
   failTransit:  function(result)    {
-    console.log('here2');
     this.pending = false;
     this.subscriptions.forEach(function(subscription) {
       subscription.reject();
     })
     this.subscriptions = [];
-   throw result;
+    throw result;
   },
   doTransit:    function(lifecycle) { this.state = lifecycle.to;           },
 
@@ -170,7 +162,6 @@ mixin(JSM.prototype, {
   },
 
   observeEvents: function(events, args, previousEvent, previousResult) {
-    var _this = this;
     if (events.length === 0) {
       return this.endTransit(args, previousResult === undefined ? true : previousResult);
     }
@@ -191,11 +182,8 @@ mixin(JSM.prototype, {
       var observer = observers.shift(),
           result = observer[event].apply(observer, args);
       if (result && typeof result.then === 'function') {
-        return result.then(function() {
-          _this.observeEvents(events, args, event);
-        }).catch(function() {
-          _this.failTransit();
-        });
+        return result.then(this.observeEvents.bind(this, events, args, event))
+                     .catch(this.failTransit.bind(this))
       }
       else if (result === false) {
         return this.endTransit(args, false);
