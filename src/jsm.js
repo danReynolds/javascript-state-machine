@@ -116,9 +116,13 @@ mixin(JSM.prototype, {
 				return _this.resumeTransit(transition, from, to, args);
 			});
 		}
-	   return this.resumeTransit(transition, from, to, args).then(function(result) {
-       return result;
-     });
+	  var result = this.resumeTransit(transition, from, to, args)
+    if (result.then) {
+      result.then(function(result) {
+         return result;
+       });
+     }
+     return result;
   },
 
   beginTransit: function(to) {
