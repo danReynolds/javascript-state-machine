@@ -11,7 +11,7 @@ function JSM(context, config) {
   this.config        = config;
   this.state         = config.init.from;
   this.observers     = [context];
-  this.subscriptions = {};
+  this.subscriptions = [];
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -53,14 +53,10 @@ mixin(JSM.prototype, {
     return this.config.transitionsFor(this.state);
   },
 
-  waitForState: function(state) {
+  waitForState: function() {
     var _this = this;
     return new Promise(function(resolve, reject) {
-      if (!_this.subscriptions[state]) {
-          _this.subscriptions[state] = [{ resolve: resolve, reject: reject }];
-        } else {
-          _this.subscriptions[state].push({ resolve: resolve, reject: reject });
-        }
+      _this.subscriptions.push({ resolve: resolve, reject: reject });
     });
   },
 
@@ -116,7 +112,7 @@ mixin(JSM.prototype, {
       return this.context.onInvalidTransition(transition, from, to);
 
     if (this.isPending()) {
-			return this.waitForState(to).then(function() {
+			return this.waitForState().then(function() {
 				return this.resumeTransit(transition, from, to, args);
 			});
 		}
@@ -124,22 +120,17 @@ mixin(JSM.prototype, {
   },
 
   beginTransit: function(to) {
-    this.pendingState = to;
     this.pending = true;
   },
   endTransit:   function(args, result)    {
 		this.pending = false;
-    this.pendingState = null;
 		var to = args[0].to;
-		if (this.subscriptions[to]) {
-			this.subscriptions[to].forEach(function(resolve) {
-				resolve(result);
-			});
-			delete this.subscriptions[to];
-		}
+		this.subscriptions.forEach(function(resolve) {
+			resolve(result);
+		});
 		return result;
 	},
-  failTransit:  function(result)    { this.pendingState = null; this.pending = false; throw result;  },
+  failTransit:  function(result)    { this.pending = false; throw result;  },
   doTransit:    function(lifecycle) { this.state = lifecycle.to;           },
 
   observe: function(args) {
