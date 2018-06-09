@@ -413,10 +413,10 @@ mixin(JSM.prototype, {
   waitForState: function(state) {
     var _this = this;
     return new Promise(function(resolve, reject) {
-      if (!_this._subscriptions[state]) {
-          _this._subscriptions[state] = [{ resolve: resolve, reject: reject }];
+      if (!_this.subscriptions[state]) {
+          _this.subscriptions[state] = [{ resolve: resolve, reject: reject }];
         } else {
-          _this._subscriptions[state].push({ resolve: resolve, reject: reject });
+          _this.subscriptions[state].push({ resolve: resolve, reject: reject });
         }
     });
   },
@@ -442,7 +442,7 @@ mixin(JSM.prototype, {
         changed   = this.config.options.observeUnchangedState || (from !== to);
     this.config.addState(to);  // might need to add this state if it's unknown (e.g. conditional transition or goto)
 
-    this.beginTransit();
+    this.beginTransit(to);
 
     args.unshift({             // this context will be passed to each lifecycle event observer
       transition: transition,
@@ -480,10 +480,14 @@ mixin(JSM.prototype, {
 		return this.resumeTransit(transition, from, to, args);
   },
 
-  beginTransit: function()                { this.pending = true;                 },
+  beginTransit: function() {
+    this.pendingState = to;
+    this.pending = true;
+  },
   endTransit:   function(args, result)    {
 		this.pending = false;
-		var to = args.to;
+    this.pendingState = null;
+		var to = args[0].to;
 		if (this.subscriptions[to]) {
 			this.subscriptions[to].forEach(function(resolve) {
 				resolve(result);
@@ -492,7 +496,7 @@ mixin(JSM.prototype, {
 		}
 		return result;
 	},
-  failTransit:  function(result)    { this.pending = false; throw result;  },
+  failTransit:  function(result)    { this.pendingState = null; this.pending = false; throw result;  },
   doTransit:    function(lifecycle) { this.state = lifecycle.to;           },
 
   observe: function(args) {
