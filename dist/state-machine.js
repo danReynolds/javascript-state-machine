@@ -473,8 +473,9 @@ mixin(JSM.prototype, {
 				return _this.resumeTransit(transition, from, to, args);
 			});
 		}
-	   var x = this.resumeTransit(transition, from, to, args);
-     return x;
+	   return this.resumeTransit(transition, from, to, args).then(function(result) {
+       return result;
+     });
   },
 
   beginTransit: function(to) {
