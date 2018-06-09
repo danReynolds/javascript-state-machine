@@ -165,6 +165,7 @@ mixin(JSM.prototype, {
   },
 
   observeEvents: function(events, args, previousEvent, previousResult) {
+    var _this = this;
     if (events.length === 0) {
       return this.endTransit(args, previousResult === undefined ? true : previousResult);
     }
@@ -185,8 +186,11 @@ mixin(JSM.prototype, {
       var observer = observers.shift(),
           result = observer[event].apply(observer, args);
       if (result && typeof result.then === 'function') {
-        return result.then(this.observeEvents.bind(this, events, args, event))
-                     .catch(this.failTransit.bind(this))
+        return result.then(function() {
+          _this.observeEvents(events, args, event);
+        }).catch(function() {
+          _this.failTransit();
+        });
       }
       else if (result === false) {
         return this.endTransit(args, false);
