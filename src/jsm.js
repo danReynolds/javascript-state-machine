@@ -120,7 +120,11 @@ mixin(JSM.prototype, {
         return _this.resumeTransit(transition, from, to, args);
       });
     }
-    return Promise.resolve(this.resumeTransit(transition, from, to, args));
+    var result = this.resumeTransit(transition, from, to, args);
+    if (result && typeof result.then === "function") {
+      return result;
+    }
+    return Promise.resolve(result);
   },
 
   beginTransit: function(to) {
