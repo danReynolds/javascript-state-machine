@@ -112,7 +112,7 @@ mixin(JSM.prototype, {
         args
       );
       if (finalResult && typeof finalResult.then === "function") {
-        return result.then(function(result) {
+        return finalResult.then(function(result) {
           resolve(result);
         }).catch(function(err) {
           reject(err);
