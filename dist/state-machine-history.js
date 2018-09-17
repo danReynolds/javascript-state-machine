@@ -132,10 +132,10 @@ var camelize = __webpack_require__(0);
 module.exports = function(options) {
   options = options || {};
 
-  var past = camelize(options.name || options.past),
+  var past = camelize(options.name || options.past || "history"),
     future = camelize(options.future || "future"),
     clear = camelize.prepended("clear", past),
-    back = camelize.prepended(past, "back"),
+    back = "back",
     forward = camelize.prepended(past, "forward"),
     canBack = camelize.prepended("can", back),
     canForward = camelize.prepended("can", forward),
