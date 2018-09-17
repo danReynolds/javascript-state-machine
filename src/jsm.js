@@ -32,6 +32,10 @@ mixin(JSM.prototype, {
     return this.pending;
   },
 
+  lifecycle: function() {
+    return this.config.lifecycle;
+  },
+
   can: function(transition) {
     return !this.isPending() && !!this.seek(transition);
   },

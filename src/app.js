@@ -19,6 +19,7 @@ var PublicMethods = {
   allTransitions:      function()            { return this._fsm.allTransitions()                              },
   allStates:           function()            { return this._fsm.allStates()                                   },
   isPending:           function()            { return this._fsm.isPending()                                   },
+  lifecycle:           function()            { return this._fsm.lifecycle()                                   },
   onInvalidTransition: function(t, from, to) { return this._fsm.onInvalidTransition(t, from, to)              },
   onPendingTransition: function(t, from, to) { return this._fsm.onPendingTransition(t, from, to)              },
 }
