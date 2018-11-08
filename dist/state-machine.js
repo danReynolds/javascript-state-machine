@@ -485,17 +485,16 @@ mixin(JSM.prototype, {
 
   transit: function(transition, from, to, args) {
     var _this = this;
-    if (!to) return this.context.onInvalidTransition(transition, from, to);
-
     if (this.isPending()) {
       return this.waitForState()
         .then(function() {
-          return _this.beginTransit(transition, from, to, args);
+          return _this.transit(transition, from, to, args);
         })
         .catch(function(result) {
           return Promise.reject(result);
         });
     }
+    if (!to) return this.context.onInvalidTransition(transition, from, to);
     return this.beginTransit(transition, from, to, args);
   },
   endTransit: function(args, result) {
