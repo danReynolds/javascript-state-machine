@@ -132,7 +132,7 @@ mixin(JSM.prototype, {
       return this.waitForState()
         .then(function() {
           // Re-calculate the to state since it has likely changed after the pending state has finished
-          return _this.transit(transition, from, this.seek(transition, args), args);
+          return _this.transit(transition, from, _this.seek(transition, args), args);
         })
         .catch(function(result) {
           return Promise.reject(result);
