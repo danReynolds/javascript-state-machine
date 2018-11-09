@@ -61,12 +61,13 @@ module.exports = function(options) {
 
   plugin.methods[back] = function() {
     if (this.isPending()) {
+      var _this = this;
       return this._fsm.waitForState().then(function() {
-        if (!this[canBack]) throw Error("no history");
-        var from = this[past].pop(),
-        to = this[past].pop();
-        this[future].push(from);
-        return this._fsm.transit(back, from, to, []);
+        if (!_this[canBack]) throw Error("no history");
+        var from = _this[past].pop(),
+        to = _this[past].pop();
+        _this[future].push(from);
+        return _this._fsm.transit(back, from, to, []);
       });
     }
   };
