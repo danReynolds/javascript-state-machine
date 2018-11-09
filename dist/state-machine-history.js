@@ -194,8 +194,9 @@ module.exports = function(options) {
 
   plugin.methods[back] = function() {
     if (this.isPending()) {
+      var _this = this;
       return this._fsm.waitForState().then(function() {
-        return this.doBack();
+        return _this.doBack();
       });
     }
     return this.doBack();
