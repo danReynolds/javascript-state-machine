@@ -488,6 +488,7 @@ mixin(JSM.prototype, {
     if (this.isPending()) {
       return this.waitForState()
         .then(function() {
+          this.isPending = false;
           return _this.fire(transition, args);
         })
         .catch(function(result) {
@@ -498,10 +499,11 @@ mixin(JSM.prototype, {
     return this.beginTransit(transition, from, to, args);
   },
   endTransit: function(args, result) {
-    this.pending = false;
     var to = args[0].to;
     if (this.subscriptions.length !== 0) {
       this.subscriptions.shift().resolve();
+    } else {
+      this.pending = false;
     }
     return result;
   },
