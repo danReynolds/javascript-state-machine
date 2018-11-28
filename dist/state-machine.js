@@ -488,7 +488,7 @@ mixin(JSM.prototype, {
     if (this.isPending()) {
       return this.waitForState()
         .then(function() {
-          this.pending = false;
+          _this.pending = false;
           return _this.fire(transition, args);
         })
         .catch(function(result) {
