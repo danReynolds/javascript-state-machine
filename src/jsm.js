@@ -58,6 +58,7 @@ mixin(JSM.prototype, {
 
   waitForState: function() {
     var _this = this;
+    console.log('is pending, waiting for state');
     return new Promise(function(resolve, reject) {
       _this.subscriptions.push({ resolve: resolve, reject: reject });
     });
@@ -73,6 +74,7 @@ mixin(JSM.prototype, {
   },
 
   fire: function(transition, args) {
+    console.log('firing transition', transition);
     return this.transit(
       transition,
       this.state,
@@ -86,7 +88,7 @@ mixin(JSM.prototype, {
     var lifecycle = this.config.lifecycle,
       changed = this.config.options.observeUnchangedState || from !== to;
     this.config.addState(to); // might need to add this state if it's unknown (e.g. conditional transition or goto)
-
+    console.log('beginning transit and setting pending true', transition);
     this.pending = true;
 
     args.unshift({
@@ -128,7 +130,9 @@ mixin(JSM.prototype, {
 
   transit: function(transition, from, to, args) {
     var _this = this;
+    console.log('checking if pending', transition);
     if (this.isPending()) {
+      console.log('was pending', transition);
       return this.waitForState()
         .then(function() {
           _this.pending = false;
@@ -138,19 +142,24 @@ mixin(JSM.prototype, {
           return Promise.reject(result);
         });
     }
+    console.log('was not pending, starting transition', transition);
     if (!to) return this.context.onInvalidTransition(transition, from, to);
     return this.beginTransit(transition, from, to, args);
   },
   endTransit: function(args, result) {
+    console.log('ending tansit');
     var to = args[0].to;
     if (this.subscriptions.length !== 0) {
+      console.log('resolving subscription');
       this.subscriptions.shift().resolve();
     } else {
+      console.log('no subscriptions, setting pending false');
       this.pending = false;
     }
     return result;
   },
   failTransit: function(result) {
+    console.log('transition failed, rejecting all');
     this.pending = false;
     this.subscriptions.forEach(function(subscription) {
       subscription.reject();
