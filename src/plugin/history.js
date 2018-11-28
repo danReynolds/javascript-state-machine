@@ -73,6 +73,7 @@ module.exports = function(options) {
     if (this.isPending()) {
       var _this = this;
       return this._fsm.waitForState().then(function() {
+        _this.pending = false;
         return _this.doBack();
       });
     }
