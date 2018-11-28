@@ -144,7 +144,7 @@ mixin(JSM.prototype, {
     }
     console.log('was not pending, starting transition', transition);
     if (!to) {
-      return this.context.onInvalidTransition(transition, from, to).then(function(error) {
+      return this.context.onInvalidTransition(transition, from, to).catch(function(error) {
         return _this.failTransit(error);
       });
     }
