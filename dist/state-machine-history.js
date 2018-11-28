@@ -194,10 +194,8 @@ module.exports = function(options) {
 
   plugin.methods[back] = function() {
     if (this.isPending()) {
-     console.log('is pending, waiting for state from history');
       var _this = this;
       return this._fsm.waitForState().then(function() {
-        console.log('woken up in history, setting pending false');
         _this._fsm.pending = false;
         return _this.doBack();
       });
