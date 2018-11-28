@@ -143,7 +143,11 @@ mixin(JSM.prototype, {
         });
     }
     console.log('was not pending, starting transition', transition);
-    if (!to) return this.context.onInvalidTransition(transition, from, to);
+    if (!to) {
+      return this.context.onInvalidTransition(transition, from, to).then(function(error) {
+        _this.failTransit(error);
+      });
+    }
     return this.beginTransit(transition, from, to, args);
   },
   endTransit: function(args, result) {
@@ -158,14 +162,16 @@ mixin(JSM.prototype, {
     }
     return result;
   },
-  failTransit: function(result) {
-    console.log('transition failed, rejecting all');
-    this.pending = false;
-    this.subscriptions.forEach(function(subscription) {
-      subscription.reject();
-    });
-    this.subscriptions = [];
-    throw result;
+  failTransit: function(error) {
+    console.log('transition failed, moving on');
+    if (this.subscriptions.length !== 0) {
+      console.log('resolving subscription from fail');
+      this.subscriptions.shift().resolve();
+    } else {
+      console.log('no subscriptions, setting pending false from fail');
+      this.pending = false;
+    }
+    throw error;
   },
   doTransit: function(lifecycle) {
     this.state = lifecycle.to;
